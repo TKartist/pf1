@@ -36,7 +36,7 @@
 
 ;;Data
 ;character : Image -> Image
-;  it change the image of the avater when it crush in to one pilar
+;  it change the image of the avatar when it crush in to one pilar
 ; header : (define (character gui) image)
 
 ;;Example
