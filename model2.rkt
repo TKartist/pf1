@@ -36,7 +36,7 @@
 
 ;;Data
 ;character : Image -> Image
-;  it change the image of the avater when it crush in to one pilar
+;  it change the image of the avatar when it crush in to pillar
 ; header : (define (character gui) image)
 
 ;;Example
@@ -157,7 +157,7 @@
 ;;DATA
 ;respawn : State ->  State
 ; It spawn the pilar
-;header : (define (respown gui) GUI)
+;header : (define (respawn gui) GUI)
 
 ;;EXAMPLE
 
