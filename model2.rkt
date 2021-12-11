@@ -157,7 +157,7 @@
 ;;DATA
 ;respawn : State ->  State
 ; It spawn the pilar
-;header : (define (respown gui) GUI)
+;header : (define (respawn gui) GUI)
 
 ;;EXAMPLE
 
