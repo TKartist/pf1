@@ -313,7 +313,7 @@
       (GUI-quit? gui)
       (make-ItemDetails
        (make-posn (random 1100 10000) (random 50 550))
-       0
+       (ItemDetails-time (GUI-item gui))
        (ItemDetails-pillar (GUI-item gui))
        (random 1 3)))]
     [(and (boolean=? #t (x-buff gui))
@@ -365,7 +365,7 @@
       (make-ItemDetails
        (make-posn (random 1100 10000) (random 50 550))
        (ItemDetails-time (GUI-item gui))
-       180
+       170
        (ItemDetails-type (GUI-item gui))))]
     [(and (and (> 131 (ItemDetails-time (GUI-item (buff-location gui)))) (> (ItemDetails-time (GUI-item (buff-location gui))) 0)) (= (ItemDetails-type (GUI-item gui)) 2))
      (make-GUI
@@ -628,8 +628,7 @@
 
 (define TIPS (list "Press 'SPACE' or 'UP' to jump"
                    "You can click multiple times to jump higher"
-                   "Take buffs to make the pillar gaps bigger"
-                   "Avoid nerfs which decreases the pillar gaps"
+                   "Avoid eating items as it will harden the game"
                    "HAVE FUN!!!"))
 
 ;Random number 'z' 
@@ -645,8 +644,7 @@
     [(= z 1) (first TIPS)]
     [(= z 2) (second TIPS)]
     [(= z 3) (third TIPS)]
-    [(= z 4) (fourth TIPS)]
-    [else (fifth TIPS)]))
+    [else (fourth TIPS)]))
 
 (define inline (ellipse 700 50 "solid" "white"))
 (define outline (ellipse 700 50 "outline" "black"))
