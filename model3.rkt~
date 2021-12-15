@@ -1,7 +1,6 @@
 ;; The first three lines of this file were inserted by DrRacket. They record metadata
 ;; about the language level of this file in a form that our tools can easily process.
-#reader(lib "htdp-advanced-reader.ss" "lang")((modname model2) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #t #t none #f () #f)))
-
+#reader(lib "htdp-intermediate-lambda-reader.ss" "lang")((modname model3) (read-case-sensitive #t) (teachpacks ()) (htdp-settings #(#t constructor repeating-decimal #f #t none #f () #f)))
 ;;;;;;;;;;**********          Programming Fundamentals Group Project          **********;;;;;;;;;;
 
 
@@ -15,71 +14,87 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;     VERSION 1.0    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;;; LIBRARIES UTILIZED
-
+;________________________________________________________________________________________________
 
 (require 2htdp/universe)
 (require 2htdp/image)
+;________________________________________________________________________________________________
 
-;; BACKGROUND
+; For better clarity each segment  of code is labelled by a tag, to undertand the conceptual relevance
+;________________________________________________________________________________________________
+
+;; Background dimentions of the game / tag: BACKGROUND
+
 (define WIDTH 1040)
 (define HEIGHT 600)
 (define BACKGROUND (empty-scene WIDTH HEIGHT))
+;________________________________________________________________________________________________
 
+;; The moving object up and down / tag: DORAEMON
 
-;; DORAEMON
 (define DORAEMON (bitmap "doraemon.png"))  ;; image name: doraemon.png
-(define crash (bitmap "crash.png"))
-(define easter (bitmap "superdo.png"))
-(define end-sign (scale (/ 2 1) (bitmap "game-over.png")))
+(define CRASH (bitmap "crash.png"))
+(define EASTER (bitmap "superdo.png"))
+(define END-SIGN (scale (/ 2 1) (bitmap "game-over.png")))
 (define ITEM (bitmap "dora.png"))
 
 
-;;Data
+;; Data type
+
 ;character : Image -> Image
 ;  it change the image of the avatar when it crush in to pillar
 ; header : (define (character gui) image)
 
-;;Example
+;; Example
 
 (check-expect (character case-1) DORAEMON)
-(check-expect (character (make-GUI 300 (make-posn 500 (random -200 150)) (make-posn 1000 (random -200 150)) #t 0 #f 0 #f I1)) crash)
-(check-expect (character (make-GUI 300 (make-posn 500 (random -200 150)) (make-posn 1000 (random -200 150)) #t 2200 #f 0 #f I1)) easter)
+(check-expect (character (make-GUI 300 (make-posn 500 (random -200 150)) (make-posn 1000 (random -200 150)) #t 0 #f 0 #f I1)) CRASH)
+(check-expect (character (make-GUI 300 (make-posn 500 (random -200 150)) (make-posn 1000 (random -200 150)) #t 2200 #f 0 #f I1)) EASTER)
 
-;Code
+;; Code
 
 (define (character gui)
   (cond
-    [(and (>= (GUI-score gui) 2112) (>= 2205 (GUI-score gui))) easter] ;; Easter Egg doraemon
+    [(and (>= (GUI-score gui) 2112) (>= 2205 (GUI-score gui))) EASTER] ;; Easter Egg doraemon
     [(boolean=? (GUI-dead gui) #f) DORAEMON]
-    [else crash]))
+    [else CRASH]))
+;________________________________________________________________________________________________
 
-;; BACKGROUND IMAGE
-(define night (bitmap "night.jpeg")) ;; image name: background.jpeg
-(define day (bitmap "day.jpeg"))     ;; image name: daymode.jpeg
+;; The decorative backgrounds images / tag: BACKGROUND 
+(define NIGHT (bitmap "night.jpeg")) ;; image name: background.jpeg
+(define DAY (bitmap "day.jpeg"))     ;; image name: daymode.jpeg
+;________________________________________________________________________________________________
 
-;;Data
+;; Change between the light/dark mode / tag: BACKGROUND
+
+;; Data type
+
 ;theme : Image -> Image
 ; it change the background-image every 1000 ticks
 ; header : (define (theme gui) image)
 
-;;Example
+;; Example
 
-(check-expect (theme case-1) day)
-(check-expect (theme (make-GUI 300 (make-posn 500 (random -200 150)) (make-posn 1000 (random -200 150)) #f 1000 #f 0 #f I1)) night)
+(check-expect (theme case-1) DAY)
+(check-expect (theme (make-GUI 300 (make-posn 500 (random -200 150)) (make-posn 1000 (random -200 150)) #f 1000 #f 0 #f I1)) NIGHT)
 
 
-;;CODE
+;; Code
+
 (define (theme gui)
   (cond
-    [(= (remainder (quotient (GUI-score gui) 1000) 2) 0) day]  ;; Nightmode
-    [(= (remainder (quotient (GUI-score gui) 1000) 2) 1) night])) ;;Daymode
+    [(= (remainder (quotient (GUI-score gui) 1000) 2) 0) DAY]  ;; Nightmode
+    [(= (remainder (quotient (GUI-score gui) 1000) 2) 1) NIGHT])) ;;Daymode
 
+;________________________________________________________________________________________________
 
-;Starting x-value for DORAEMON
-(define x 100) 
+;Starting x-value forthe object  / tag: DORAEMON
+(define X 100) 
+;________________________________________________________________________________________________
 
+; Graphical User Interface (GUI) deatail / tag: MECHANICS 
 
-;;DATA - Graphical User Interface (GUI) deatail
+;;Data type 
 
 ; a GUI is a structure (make-GUI current-state obstacle obstacle1 dead score game))
 ;    where current-state   : Number
@@ -126,13 +141,17 @@
 (define case-d2 (make-GUI 300 (make-posn 200 100) (make-posn 599 99) #t 1200 #f 0 #f I1))
 (define case-d3 (make-GUI 300 (make-posn 200 100) (make-posn 599 99) #t 3100 #f 0 #f I1))
 
+;________________________________________________________________________________________________
 
-;;DATA
-;Score : State -> Text
-; It take the score of the game
+; Scoring system / tag: MECHANICS
+
+;; Data type
+
+; score : State -> Text
+; it take the score of the game
 ;header : (define (SCORE gui) (text 40 "black")
 
-;; EXAMPLE
+;; Example
 
 (check-expect (SCORE case-1) (text/font "SCORE: 0000" 30 "black" #f "roman" 'slant 'normal #f))
 (check-expect (SCORE (make-GUI 300 (make-posn 500 (random -200 150)) (make-posn 1000 (random -200 150)) #f 1020 #f 0 #f I1)) (text/font "SCORE: 1020" 30 "white" #f "roman" 'slant 'normal #f))
@@ -140,7 +159,8 @@
 (check-expect (SCORE (make-GUI 300 (make-posn 500 (random -200 150)) (make-posn 1000 (random -200 150)) #f 20 #f 0 #f I1)) (text/font "SCORE: 0020" 30 "black" #f "roman" 'slant 'normal #f))
 (check-expect (SCORE (make-GUI 300 (make-posn 500 (random -200 150)) (make-posn 1000 (random -200 150)) #f 2001 #f 0 #f I1)) (text/font "SCORE: 2001" 30 "black" #f "roman" 'slant 'normal #f))
 
-;;CODE - Score
+;; Code 
+
 (define (SCORE gui)
   (cond
     [(> 10 (GUI-score gui)) (text/font (string-append "SCORE: 000" (number->string (GUI-score gui)))
@@ -153,19 +173,23 @@
                                                                               30 "black" #f "roman" 'slant 'normal #f)]   ;; Nightmode
     [(= (remainder (quotient (GUI-score gui) 1000) 2) 1) (text/font (string-append "SCORE: " (number->string (GUI-score gui)))
                                                                               30 "white" #f "roman" 'slant 'normal #f)]))   ;;Daymode
+;________________________________________________________________________________________________
 
-;;DATA
+; Respawn system / tag: MECHANICS
+
+;; Data type
+
 ;respawn : State ->  State
 ; It spawn the pilar
 ;header : (define (respawn gui) GUI)
 
-;;EXAMPLE
+;; Example
 
 (check-expect (respawn case-2) (make-GUI 300
                               (make-posn 500 100)
                               (make-posn 1000 100) #f 0 #t 0 #f I1))
 
-;;CODE - respawn of pillar
+;; Code - respawn of pillar
 (define (respawn gui)
   (cond
     [(> 0 (posn-x (GUI-obstacle gui)))
@@ -189,8 +213,12 @@
                #f
                (GUI-item gui))]
     [else gui]))
+;________________________________________________________________________________________________
 
-;;DATA
+; Detector/collision system / tag: LOGIC
+
+;; Data type
+
 ;x-detector : State -> Boolean
 ;  it check if the Doraemon is in range of obstacle (x-axis)
 (define (x-detector gui)
@@ -226,7 +254,7 @@
              (GUI-current-state gui)))#f]
     [else #t]))
 
-;;EXAMPLES OF COLLISION
+;; Example 
 
 (check-expect (x-detector case-1) #f)
 (check-expect (x-detector (make-GUI 300 (make-posn 150 100) (make-posn 300 500) #f 0 #f 0 #f I1)) #t)
@@ -236,13 +264,16 @@
 (check-expect (y-detector case-2) #t)
 (check-expect (y1-detector (make-GUI 300 (make-posn 150 20) (make-posn 150 20) #f 0 #f 0 #f I1)) #f)
 (check-expect (y1-detector case-2) #t)
+;________________________________________________________________________________________________
 
-;;DATA
+; Detector/collision system / tag: LOGIC
+
+;; Data type
 ;collision-detection : State -> State
 ; it detect if the avatar collide with one pillar
 ;header : (define (collision-detector case-1) case-1)
 
-;;EXAMPLE
+;; Example
 
 (check-expect (collision-detector case-1) case-1)
 (check-expect (collision-detector case-2) case-2)
@@ -251,7 +282,8 @@
 (check-expect (collision-detector (make-GUI 300 (make-posn 150 10) (make-posn 150 10) #f 0 #f 0 #f I1)) (make-GUI 300 (make-posn 150 10) (make-posn 150 10) #f 0 #f 0 #f I1))
 (check-expect (collision-detector (make-GUI 300 (make-posn 150 100) (make-posn 150 100) #f 0 #f 0 #f I1)) (make-GUI 300 (make-posn 150 100) (make-posn 150 100) #t 0 #t 0 #f I1))
 
-;CODE - Collision detection
+; Code - Collision detection
+
 (define (collision-detector gui)
   (cond
     [(or (and (boolean=? #t (x-detector gui))
@@ -261,6 +293,9 @@
      (make-GUI (GUI-current-state gui) (GUI-obstacle gui) (GUI-obstacle1 gui) #t (GUI-score gui) #t (GUI-timer gui) #f (GUI-item gui))]
      [else gui]))
 
+;________________________________________________________________________________________________
+
+; Respawn system / tag: MECHANICS
 
 ;Spawn the pillar one above the other
 (define (bottom-pillar gui)
@@ -269,24 +304,24 @@
 (define (bottom-pillar1 gui)
   (+ (posn-y (GUI-obstacle1 gui)) 450 (ItemDetails-pillar (GUI-item (buff-collision gui)))))
 
-;============================================================================================================
-;;DATA
+;________________________________________________________________________________________________
+
+; Buff system / tag: MECHANICS
+
+;; Data type
 ; buff-collision : State -> State
-;......
 ; header : (define (buff-collision gui) ...)
 
-
-;(define item1 (make-Item (make-posn (random 2000 10000) (random 50 550)) 0 0))
-
-;(define case-7 (make-GUI 500 (make-posn 400 200) (make-posn 900 200) #f 0 #f 0 #f (make-ItemDetails (make-posn 100 400) 0 220 0)))
+(define case-7 (make-GUI 500 (make-posn 400 200) (make-posn 900 200) #f 0 #f 0 #f (make-ItemDetails (make-posn 100 400) 0 220 0)))
 
 
-;;EXAMPLE
+;; Example
 
-;(check-expect (buff-collision case-7) case-7)
+(check-expect (buff-collision case-7) case-7)
 
 
-;DATA - Buff collision
+;; Code - Buff collision
+
 (define (x-buff gui)
   (cond
     [(and (> 130 (posn-x (ItemDetails-cord (GUI-item gui))))
@@ -383,12 +418,15 @@
        270
        (ItemDetails-type (GUI-item gui))))]
     [else gui]))
+;________________________________________________________________________________________________
 
-;=======================================================================================================
-
+; Quit system / tag: BACKGORUND
 
 ;;Quit Written 
-(define quit (bitmap "quit.png"))
+(define QUIT (bitmap "quit.png"))
+;________________________________________________________________________________________________
+
+; Pilar / tag: MECHANICS
 
 ;; Pilar Function
 (define (pillars gui)
@@ -397,47 +435,49 @@
                             (place-image TUBE-1 (posn-x (GUI-obstacle1 gui)) (posn-y (GUI-obstacle1 gui))
                                          (place-image TUBE-2 (posn-x (GUI-obstacle1 gui)) (bottom-pillar1 gui)
                                                       (place-image (theme gui) 520 300 BACKGROUND))))))
+;________________________________________________________________________________________________
 
-;;DATA
+;; Background of the game / tag: BACKGROUND
+;; Data type
 ;render : State -> Image
 ; It renders the game
 ;header : (define (render case-1) (loading-screen case-1))
 
-;EXAMPLE
+;; Example
 
 (check-expect (render case-1) (loading-screen case-1))
 (check-expect (render case-2) (place-image (text/font "SCORE: 0000" 30 "black" #f "roman" 'slant 'normal #f) 850 90
-              (place-image (character case-2) x (GUI-current-state case-2) (pillars case-2))))
-;(check-expect (render case-d1) (ending-screen case-d1))
-;(check-expect (render case-d2) (ending-screen case-d2))
-;(check-expect (render case-d3) (ending-screen case-d3))
+              (place-image (character case-2) X (GUI-current-state case-2) (pillars case-2))))
+(check-expect (render case-d1) (ending-screen case-d1))
+(check-expect (render case-d2) (ending-screen case-d2))
+(check-expect (render case-d3) (ending-screen case-d3))
 
-;CODE - Render
+; Code - Render
 (define (render gui)
   (cond
-    [(and (boolean=? (GUI-dead (collision-detector gui)) #f) (boolean=? (GUI-game gui) #f)) (loading-screen gui)]
-    [(and (boolean=? (GUI-dead gui) #t) (boolean=? (GUI-game gui) #f)) (ending-screen gui)]
-    [else (place-image (SCORE gui) 850 90
+    [(and (boolean=? (GUI-dead (collision-detector gui)) #f) (boolean=? (GUI-game gui) #f)) (loading-screen gui)]                 ;; Starting screen
+    [(and (boolean=? (GUI-dead gui) #t) (boolean=? (GUI-game gui) #f)) (ending-screen gui)]                                       ;; Game-over screen
+    [else (place-image (SCORE gui) 850 90                                                                                         ;; Game Screen
                        (place-image ITEM (posn-x (ItemDetails-cord (GUI-item gui))) (posn-y (ItemDetails-cord (GUI-item gui)))
-                                    (place-image (character gui) x (GUI-current-state gui) (pillars gui))))]))
+                                    (place-image (character gui) X (GUI-current-state gui) (pillars gui))))]))
+;________________________________________________________________________________________________
 
-;; DATA
+; Moving avatar / tag: DORAEMON
+
+;; Data  type
+
 ;tick  : State -> State
 ;it makes the avatar moves up and down
 ; header : (define (tick case-1)
 
 
-;EXAMPLE
+;  Example
+
 (check-expect (tick case-17) (make-GUI 300
                               (make-posn 432 789)
                               (make-posn 637 399)
                               #false 1 #false 0 #false
                               (make-ItemDetails (make-posn 4000 340) 0 220 0)))
-;(check-expect (tick case-18) (make-GUI 306
-;                              (make-posn 424 789)
-;                              (make-posn 629 399)
-;                              #false 1 #true 0 #false
-;                              (make-ItemDetails (make-posn 3992 340) 220 1 0)))
 (check-expect (tick case-19) (make-GUI 307
                               (make-posn 432 789)
                               (make-posn 637 399)
@@ -449,7 +489,7 @@
                               #true 0 #false 1 #false
                               (make-ItemDetails (make-posn 4000 340) 0 220 0)))
 
-;CODE - MOVING DORAEMON UP AND DOWN
+; Code - MOVING DORAEMON UP AND DOWN
 (define (tick gui)
   (cond
     [(and (and (boolean=? (GUI-dead (collision-detector gui)) #f) (boolean=? (GUI-game gui) #t))
@@ -503,7 +543,7 @@
       (+ 1 (GUI-timer (end gui)))
       #f
       (GUI-item gui))]
-    [else ;; Crash Mode
+    [else                   
      (make-GUI
       (GUI-current-state gui)
       (GUI-obstacle gui)
@@ -514,13 +554,17 @@
       (GUI-timer gui)
       #f
       (GUI-item gui))]))
+;________________________________________________________________________________________________
 
-;;DATA
+; Moving avatar / tag: DORAEMON
+
+;; Data type
+
 ;key-handler : State KeyEvent -> State
-; it makes mouve the avatr in rensponse to the 'key' being pressed
+; it makes  the avatar  move in rensponse to the 'key' being pressed
 ;header : (define (key-handler gui KeyEvent) gui)
 
-;EXAMPLE
+;; Example
 
 (check-expect (key-handler case-17 "up") (make-GUI 210
                                                    (make-posn 432 789)
@@ -538,11 +582,11 @@
                                                    #false 0 #true 0 #false
                                                    (make-ItemDetails
                                                     (make-posn 4000 340) 0 220 0)))
-(check-expect (key-handler case-19 "q") (shared ((-1- (make-posn 432 789)))
-                                          (make-GUI 300 -1- (make-posn 637 399) -1-
-                                                    #true 0 0 #true
-                                                    (make-ItemDetails (make-posn 4000 340)
-                                                                      0 220 0))))
+;(check-expect (key-handler case-19 "q") (shared ((-1- (make-posn 432 789)))
+;                                          (make-GUI 300 -1- (make-posn 637 399) -1-
+;                                                    #true 0 0 #true
+;                                                    (make-ItemDetails (make-posn 4000 340)
+;                                                                      0 220 0))))
 
 (check-expect (key-handler case-20 "up") (make-GUI 300
                                                    (make-posn 432 789)
@@ -552,7 +596,7 @@
                                                                      0 220 0)))
 
 
-;CODE - Key-Pressed
+; Code - Key-Pressed
 (define (key-handler gui KeyEvent)
   (cond
     [(and (or (string=? "up" KeyEvent) (string=? " " KeyEvent)) (boolean=? (GUI-dead (collision-detector gui)) #f))
@@ -584,11 +628,12 @@
                                        #t
                                        (GUI-item gui))]
     [else gui]))
+;________________________________________________________________________________________________
 
+;; Loading Screen / tag: BACKGROUND
 
-;;; Loading Screen
+;; Data type
 
-;;DATA
 ;col-val-logo : State -> String
 ; it change the color of the written 'score' in the first page of the game
 ;header : (define (col-val-logo gui) "medium red")
@@ -597,19 +642,22 @@
 ;it change the color of the message in the first page of the game
 ;header : (define (col-val-msg gui) "black")
 
-;EXAMPLE
+; Example
 
 (check-expect (col-val-msg case-2) "black")
 (check-expect (col-val-msg (make-GUI 300 (make-posn 500 100) (make-posn 1000 100) #f 999 #t 0 #f I1)) "transparent")
 
-;CODE
+; Code
+
 (define (col-val-msg gui)
   (cond
     [(< (remainder (GUI-score gui) 40) 33) "black"]
     [else "transparent"]))
 
+;________________________________________________________________________________________________
 
-;; LOGOS - COSTANTS
+;; LOGOS - COSTANTS / tag: BACKGROUND
+
 (define LOGO (scale (/ 1.2 1) (bitmap "logotitle.png")))
 
 (define (msg gui)
@@ -620,7 +668,8 @@
   (text/font (string-append "Tip: " tips) 20 (col-val-msg gui)
         #f 'roman 'normal 'light #f))
 
-;DATA
+;; Data type
+
 ; a List<String> is one of:
 ;  - '()                         ; empty list
 ;  - (cons String List<String>)  ; nonempty list
@@ -633,8 +682,11 @@
 
 ;Random number 'z' 
 (define z (random 1 6))
+;________________________________________________________________________________________________
 
-;;DATA
+; Tips / tag: BACKGROUND
+;; Data type
+
 ;tips : Number -> List<String>
 ; it takes a random number and it gives you the respective item of the list
 ;header (define tips) "")
@@ -649,51 +701,58 @@
 (define inline (ellipse 700 50 "solid" "white"))
 (define outline (ellipse 700 50 "outline" "black"))
 
-;DATA
+
+;; Data type
 ;bubble : State -> Image
 ;it take a state and it show you a message whith a figure in the background 'inline/outline'
 (define (bubble gui)
   (place-image (tip gui) 350 25
                (place-image inline 350 25 outline)))
 
+;________________________________________________________________________________________________
 
-;DATA
+; Game finished system / tag: MECHANICS
+
+;; Data type
 ;loading-screen : State -> Image
 ; it assemply all the image of the game
 ;header : (define (loading-screen gui) case-1)
 
-;EXAMPLE
+;; Example
 
 (check-expect (loading-screen case-1) (place-image LOGO 520 200
                                                    (place-image (msg case-1) 520 400
                                                                 (place-image (bubble case-1) 520 500
                                                                              (place-image DORAEMON 100 160
-                                                                                          (place-image quit 200 560
-                                                                                                       (place-image day 520 300 BACKGROUND)))))))
-;;CODE - Loading-screen compiler
+                                                                                          (place-image QUIT 200 560
+                                                                                                       (place-image DAY 520 300 BACKGROUND)))))))
+;; Code - Loading-screen compiler
 (define (loading-screen gui)
   (place-image LOGO 520 200
                (place-image (msg gui) 520 400
                             (place-image (bubble gui) 520 500
                                          (place-image DORAEMON 100 160
-                                                      (place-image quit 200 560
-                                                                   (place-image day 520 300 BACKGROUND)))))))
+                                                      (place-image QUIT 200 560
+                                                                   (place-image DAY 520 300 BACKGROUND)))))))
 
 
+;________________________________________________________________________________________________
 
-;DATA
+; Collision system / tag: MECHANICS
+
+;; Data type
 ;end : State -> State
 ;it stop the game when the avatar collide into a pillar
 ;header : (define (end gui) gui)
 
-;EXAMPLE
+;; Example
 
 (check-expect (end case-2) case-2)
 (check-expect (end case-21) (make-GUI 700 (make-posn 500 100) (make-posn 1000 100)
  #true 0 #false 0 #false
  (make-ItemDetails (make-posn 4000 340) 0 220 0)))
 
-;CODE - ENDING SCREEN
+;; Code - ENDING SCREEN
 (define (end gui)
   (cond
     [(or (> (GUI-current-state gui) 600) (> 0 (GUI-current-state gui)))
@@ -708,19 +767,23 @@
       #f
       (GUI-item gui))]
     [else gui]))
+;________________________________________________________________________________________________
 
-;DATA
+; Scoring system / tag: MECHANICS
+
+;; Data type
+
 ;game-over : State -> String
 ; it shows a different written based on your score
 ;header : (define (game-over gui) "")
 
-;EXAMPLE
+;; Example
 
 ;(check-expect (game-over case-d1) "BANG!!!")
 ;(check-expect (game-over case-d2) "BANG!!!")
 ;(check-expect (game-over case-d3) "BANG!!!")
 
-;CODE - Game-Over
+;; Code - Game-Over
 (define bang (scale (/ 2 1) (bitmap "bang.png")))
 (define skit (scale (/ 2 1) (bitmap "skit.png")))
 (define trash (scale (/ 2 1) (bitmap "trash.png")))
@@ -763,6 +826,8 @@
        [(> 75 (GUI-timer gui)) gj]
        [else (string-append "Score: " (number->string (GUI-score gui)))])]))
 
+;________________________________________________________________________________________________
+
 ; IMAGE / WRITTEN - COSTANTS
 (define (col-retry gui)
   (if (> (remainder (GUI-timer gui) 20) 11) white_retry retry))
@@ -771,13 +836,19 @@
 (define white_retry (bitmap "white_quit.png"))
 (define but (place-image (rectangle 116 28 "solid" "transparent") 60 15 (rectangle 120 30 "solid" "transparent")))
 (define (button gui) (place-image but 60 15 (col-retry gui)))
+;________________________________________________________________________________________________
 
-;ENDING SCREEN
+; Ending screen / tag: LOGIC
+
+;; Data type
+
+;ending screen gui -> Image
+; records the progress 
 (define (ending-screen gui)
      (place-image (if (string? (game-over gui)) (text/font (game-over gui) 45 "black" #f "roman" 'normal 'bold #f) (game-over gui)) 520 450
-                  (place-image quit 200 560
-                               (place-image end-sign 520 200
-                                            (place-image (button gui) 960 560 day)))))
+                  (place-image QUIT 200 560
+                               (place-image END-SIGN 520 200
+                                            (place-image (button gui) 960 560 DAY)))))
 
 
 (define (handle-mouse gui x-mouse y-mouse mouse-event)
@@ -790,9 +861,10 @@
      (make-GUI 300 (make-posn 500 (random -200 150)) (make-posn 1000 (random -200 150)) #f 0 #f 0 #f I1)]
     [else gui]))
 
-;;;TUBES
+;________________________________________________________________________________________________
 
-;; UPPER TUBE
+;; UPPER TUBE is a constant
+
 (define TUBE-2 (overlay (overlay/offset (rotate 90 (rectangle 23 10 "solid" "Light Sky Blue"))
                         -74 450
                         (square 0.01 "solid" "white"))
@@ -814,8 +886,10 @@
                 (rectangle 70 450 "solid" "Royal Blue")
                         (rectangle 71 (+ 1 450) "solid" "white")))
 
+;________________________________________________________________________________________________
 
-;; LOWER TUBE
+;; LOWER TUBE is a constant
+
 (define TUBE-1 (overlay (overlay/offset (rotate 90 (rectangle 23 10 "solid" "Light Sky Blue"))
                         -74 (- 450)
                         (square 0.01 "solid" "white"))
@@ -837,10 +911,18 @@
                 (rectangle 70 450 "solid" "Royal Blue")
                         (rectangle 71 (+ 1 450) "solid" "white")))
 
+;________________________________________________________________________________________________
 
-;;; QUIT?
+; Quit / tag: MECHANICS
+
+;; Data type
+
+; State -> State
+; returns to the satrt
+
 (define (QUIT? gui)
   (GUI-quit? gui))
+;________________________________________________________________________________________________
 
 ;;; Trigger
 (define (main gui)
